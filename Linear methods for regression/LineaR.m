@@ -6,7 +6,7 @@ function [model]=LineaR(x,y,standardize,type,varargin)
   # - least angle regression
   # - least angle regression - lasso modification
   # - principal components regression
-  # - partial least squares
+  # - partial least squares regression
   
   # possible to change lambda for ridge, alpha for lar and lar_lasso, 
   #   zero_value for lar_lasso, threshold for pcr, l for pls,
@@ -26,10 +26,12 @@ function [model]=LineaR(x,y,standardize,type,varargin)
   end
   
   switch type
+  
   # normal equation
     case 'normal'
       x=[ones(m,1) x];
       beta_hat=pinv(x'*x)*x'*y;
+      
   # ridge regression
     case 'ridge'
       if ~exist('lambda', 'var') || isempty(lambda)
@@ -39,6 +41,7 @@ function [model]=LineaR(x,y,standardize,type,varargin)
       lambda_mat=lambda*eye(n+1);
       lambda_mat(1,1)=0;
       beta_hat=pinv(x'*x+lambda_mat)*x'*y;
+      
   # least angle regression
     case 'lar'
       if ~exist('alpha', 'var') || isempty(alpha)
@@ -73,6 +76,7 @@ function [model]=LineaR(x,y,standardize,type,varargin)
         end
         
       end
+      
   # least angle regression - lasso modification      
     case 'lar-lasso'
       if ~exist('alpha', 'var') || isempty(alpha)
@@ -121,6 +125,7 @@ function [model]=LineaR(x,y,standardize,type,varargin)
         end
         model.nstep=nstep;
       end
+      
   # principal components regression
     case 'pcr'
       if ~exist('threshold', 'var') || isempty(threshold)
@@ -145,6 +150,8 @@ function [model]=LineaR(x,y,standardize,type,varargin)
       beta_hat(1)=mean(y);
       model.variance_threshold=threshold;
       model.theta_hat=theta_hat;
+      
+  # partial least squares regression
     case 'pls'
       if ~exist('l', 'var') || isempty(l)
         l=n;
