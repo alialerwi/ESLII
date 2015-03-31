@@ -9,52 +9,53 @@ ym=[ones(1000,1) xn]*beta_multi;
 
 standardize=1;
 
-model=LineaR(x,y,standardize,'normal');
+model=LinearRegression(x,y,standardize,'normal');
 model.type
 y_hat=predict(x,model);
 rss=sum((y-y_hat).^2)
 
-model=LineaRmulti(x,ym,standardize,'normal');
+model=LinearRegressionMulti(x,ym,standardize,'normal');
 model.type
 y_hat=predict(x,model);
 rss=sum(sum((ym-y_hat).^2))
 
-model=LineaR(x,y,standardize,'ridge','lambda','0.001');
+model=LinearRegression(x,y,standardize,'ridge','lambda','0.001');
 model.type
 y_hat=predict(x,model);
 rss=sum((y-y_hat).^2)
 
-model=LineaR(x,y,standardize,'lar');
+model=LinearRegression(x,y,standardize,'lar');
 model.type
 y_hat=predict(x,model);
 rss=sum((y-y_hat).^2)
 
-model=LineaR(x,y,standardize,'lar-lasso','zero_value','10^-10');
+model=LinearRegression(x,y,standardize,'lar-lasso','zero_value','10^-10');
 model.type
 y_hat=predict(x,model);
 rss=sum((y-y_hat).^2)
 
-model=LineaR(x,y,standardize,'pcr','threshold','0.99');
+model=LinearRegression(x,y,standardize,'pcr','threshold','0.99');
 model.type
 y_hat=predict(x,model);
 rss=sum((y-y_hat).^2)
 
-model=LineaR(x,y,standardize,'pls');
+model=LinearRegression(x,y,standardize,'pls');
 model.type
 y_hat=predict(x,model);
 rss=sum((y-y_hat).^2)
 
-model=LineaRmulti(x,ym,standardize,'reduced rank');
+pause();
+model=LinearRegressionMulti(x,ym,standardize,'reduced rank');
 model.type
 y_hat=predict(x,model);
 rss=sum(sum((ym-y_hat).^2))
 
-model=LineaRmulti(x,ym,standardize,'curds-whey');
+model=LinearRegressionMulti(x,ym,standardize,'curds-whey');
 model.type
 y_hat=predict(x,model);
 rss=sum(sum((ym-y_hat).^2))
 
-model=LineaRmulti(x,ym,standardize,'hybrid','lambda','0.01');
+model=LinearRegressionMulti(x,ym,standardize,'hybrid','lambda','0.01');
 model.type
 y_hat=predict(x,model);
 rss=sum(sum((ym-y_hat).^2))

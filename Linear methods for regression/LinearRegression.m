@@ -1,15 +1,18 @@
-function [model]=LineaR(x,y,standardize,type,varargin)
+function [model]=LinearRegression(x,y,standardize,type,varargin)
 
   # linear models implemented: 
   # - normal equation
   # - ridge regression
   # - least angle regression
   # - least angle regression - lasso modification
+  # - least angle regression - FS0 modification
   # - principal components regression
   # - partial least squares regression
+  # 
   
   # possible to change lambda for ridge, alpha for lar and lar_lasso, 
-  #   zero_value for lar_lasso, threshold for pcr, l for pls,
+  #   zero_value for lar_lasso, threshold for pcr, l for pls, 
+  # 
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -125,7 +128,7 @@ function [model]=LineaR(x,y,standardize,type,varargin)
         end
         model.nstep=nstep;
       end
-      
+    
   # principal components regression
     case 'pcr'
       if ~exist('threshold', 'var') || isempty(threshold)
@@ -181,7 +184,7 @@ function [model]=LineaR(x,y,standardize,type,varargin)
       model.PHI=PHI;
       model.THETA=THETA;
       model.P=P;
-  
+    
   endswitch
   
   # information to retrieve

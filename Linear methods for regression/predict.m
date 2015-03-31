@@ -6,6 +6,7 @@ function y_hat=predict(x_new,model,varargin)
   # - ridge regression
   # - least angle regression
   # - least angle regression - lasso modification
+  # - least angle regression - FS0 modification
   # - principal components regression
   # - partial least squares
   # - reduced rank regression, multiple output

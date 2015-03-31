@@ -1,4 +1,4 @@
-function [model]=LineaRmulti(x,y,standardize,type,varargin)
+function [model]=LineaeRegressionMulti(x,y,standardize,type,varargin)
 
   # linear models for multiple outputs. Implemented: 
   # - normal equation
