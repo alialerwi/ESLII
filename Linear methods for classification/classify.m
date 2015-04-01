@@ -3,6 +3,8 @@ function y_hat=classify(x_new,model,varargin)
   # linear models implemented: 
   # - indicator_matrix
   # - linear discriminant analysis
+  # - quadratic discriminant analysis
+  # - regularized discriminant analysis
 
   
   # evaluate arguments in varargin
@@ -35,6 +37,26 @@ function y_hat=classify(x_new,model,varargin)
       for i=1:m
         for k=1:model.K
           delta_k(i,k)=x_new(i,:)*pinv(sigma)*mu_k(:,k)-(1/2)*mu_k(:,k)'*pinv(sigma)*mu_k(:,k)+log(pi_k(k));
+        end
+        [val pos]=max(delta_k(i,:));
+        y_hat(i)=model.G(pos);
+      end
+      
+    case 'qda'    
+      pi_k=model.pi_k;
+      mu_k=model.mu_k;
+      sigma=model.sigma;   
+      
+      if model.add1==1
+        x_new=[ones(m,1) x_new];
+      end
+      
+      delta_k=zeros(m,model.K);
+      y_hat=zeros(m,1);
+      for i=1:m
+        for k=1:model.K
+          sigma_k=reshape(sigma(k,:),size(x_new,2),size(x_new,2));
+          delta_k(i,k)=x_new(i,:)*pinv(sigma_k)*mu_k(:,k)-(1/2)*mu_k(:,k)'*pinv(sigma_k)*mu_k(:,k)+log(pi_k(k));
         end
         [val pos]=max(delta_k(i,:));
         y_hat(i)=model.G(pos);
