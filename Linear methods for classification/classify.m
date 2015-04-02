@@ -61,7 +61,7 @@ function y_hat=classify(x_new,model,varargin)
       sigmaALL=gamma*model.sigmaALL+(1-gamma)*model.covariance;
       
       for k=1:model.K
-        sigma(k,:)=((1-alpha)*sigmaALL+alpha*reshape(sigma(k,:),size(x_new,2),size(x_new,2)))(:);
+        sigma(k,:)=((1-alpha)*sigmaALL+alpha*reshape(model.sigma(k,:),size(x_new,2),size(x_new,2)))(:);
       end
       
       delta_k=zeros(m,model.K);
@@ -94,7 +94,7 @@ function y_hat=classify(x_new,model,varargin)
       sigmaALL=gamma*model.sigmaALL+(1-gamma)*model.covariance;
       
       for k=1:model.K
-        [u_k d_k v_k]=svd((1-alpha)*sigmaALL+alpha*reshape(sigma(k,:),size(x_new,2),size(x_new,2)));
+        [u_k d_k v_k]=svd((1-alpha)*sigmaALL+alpha*reshape(model.sigma(k,:),size(x_new,2),size(x_new,2)));
         u(k,:)=u_k(:);
         d_k_inv=eye(size(d_k));
         for i=1:size(d_k,1)
