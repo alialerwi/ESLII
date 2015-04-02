@@ -4,6 +4,7 @@ function y_hat=classify(x_new,model,varargin)
   # - indicator_matrix
   # - linear discriminant analysis
   # - quadratic discriminant analysis with regularization
+  # - diagonalized quadratic discriminant analysis with regularization
 
   # possible to change alpha and gamma in quadratic discriminant analysis
   
@@ -45,8 +46,8 @@ function y_hat=classify(x_new,model,varargin)
     case 'qda'    
       pi_k=model.pi_k;
       mu_k=model.mu_k;
-      sigma=model.sigma;   
-      
+      sigma=zeros(size(model.sigma));
+        
       if model.add1==1
         x_new=[ones(m,1) x_new];
       end
@@ -59,16 +60,61 @@ function y_hat=classify(x_new,model,varargin)
       end
       sigmaALL=gamma*model.sigmaALL+(1-gamma)*model.covariance;
       
+      for k=1:model.K
+        sigma(k,:)=((1-alpha)*sigmaALL+alpha*reshape(sigma(k,:),size(x_new,2),size(x_new,2)))(:);
+      end
+      
       delta_k=zeros(m,model.K);
       y_hat=zeros(m,1);
       for i=1:m
         for k=1:model.K
-          sigma_k=(1-alpha)*sigmaALL+alpha*reshape(sigma(k,:),size(x_new,2),size(x_new,2));
+          sigma_k=reshape(sigma(k,:),size(x_new,2),size(x_new,2));
           delta_k(i,k)=-(1/2)*log(det(sigma_k))-(1/2)*(x_new(i,:)-mu_k(:,k)')*pinv(sigma_k)*(x_new(i,:)-mu_k(:,k)')'+log(pi_k(k));
         end
         [val pos]=max(delta_k(i,:));
         y_hat(i)=model.G(pos);
-      end 
+      end
+    
+    case 'qda-diag'    
+      pi_k=model.pi_k;
+      mu_k=model.mu_k;
+      u=zeros(model.K,size(model.sigma,1)^2);
+      d_inv=zeros(model.K,size(model.sigma,1)^2);
+        
+      if model.add1==1
+        x_new=[ones(m,1) x_new];
+      end
+      
+      if ~exist('alpha', 'var') || isempty(alpha)
+        alpha=model.alpha;
+      end
+      if ~exist('gamma', 'var') || isempty(gamma)
+        gamma=model.gamma;
+      end
+      sigmaALL=gamma*model.sigmaALL+(1-gamma)*model.covariance;
+      
+      for k=1:model.K
+        [u_k d_k v_k]=svd((1-alpha)*sigmaALL+alpha*reshape(sigma(k,:),size(x_new,2),size(x_new,2)));
+        u(k,:)=u_k(:);
+        d_k_inv=eye(size(d_k));
+        for i=1:size(d_k,1)
+          d_k_inv=d_k^(-1);
+        end
+        d_inv(k,:)=d_k_inv(:);        
+      end
+      
+      delta_k=zeros(m,model.K);
+      y_hat=zeros(m,1);
+      for i=1:m
+        for k=1:model.K
+          u_k=reshape(u(k,:),size(model.sigma),size(model.sigma));
+          d_k_inv=reshape(d_inv(k,:),size(model.sigma),size(model.sigma));
+          
+          delta_k(i,k)=-(1/2)*sum(log(diag(d_k)))-(1/2)*(u_k'*(x_new(i,:)'-mu_k(:,k)))'*d_k_inv*u_k'*(x_new(i,:)'-mu_k(:,k))+log(pi_k(k));
+        end
+        [val pos]=max(delta_k(i,:));
+        y_hat(i)=model.G(pos);
+      end
  
   endswitch
   

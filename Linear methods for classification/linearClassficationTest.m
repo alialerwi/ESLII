@@ -21,9 +21,20 @@ model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
 
+tic
+for i=1:100
 model=LinearClassification(x,y,standardize,'qda','alpha','0.5','gamma','0.5');
-model.type
-model.alpha
-model.gamma
-y_hat=classify(x(1:10,:),model);
-perf=100*mean(y(1:10)==y_hat)
+#model.type
+y_hat=classify(x,model);
+#perf=100*mean(y==y_hat)
+end
+toc
+
+tic
+for i=1:100
+model=LinearClassification(x,y,standardize,'qda-diag','alpha','0.5','gamma','0.5');
+#model.type
+y_hat=classify(x,model);
+#perf=100*mean(y==y_hat)
+end
+toc
