@@ -4,6 +4,7 @@ function y_hat=classify(x_new,model,varargin)
   # - indicator_matrix
   # - linear discriminant analysis, diagonalized
   # - quadratic discriminant analysis with regularization, diagonalized
+  # - reduced rank LDA
 
   # possible to change alpha and gamma in quadratic discriminant analysis
   
@@ -26,11 +27,10 @@ function y_hat=classify(x_new,model,varargin)
     case 'lda'
       pi_k=model.pi_k;
       mu_k=model.mu_k;
-      sigma=model.sigma;   
-      
-      if model.add1==1
-        x_new=[ones(m,1) x_new];
+      if ~exist('gamma', 'var') || isempty(gamma)
+        gamma=model.gamma;
       end
+      sigma=gamma.*model.sigma+(1-gamma).*model.cov_mat;
      
       # diagonalization
       [u d v]=svd(sigma);
@@ -56,22 +56,18 @@ function y_hat=classify(x_new,model,varargin)
       mu_k=model.mu_k;
       u=zeros(model.K,size(x_new,2)*size(x_new,2));
       d_inv=zeros(model.K,size(x_new,2)*size(x_new,2));
-        
-      if model.add1==1
-        x_new=[ones(m,1) x_new];
-      end
-      
+              
       if ~exist('alpha', 'var') || isempty(alpha)
         alpha=model.alpha;
       end
       if ~exist('gamma', 'var') || isempty(gamma)
         gamma=model.gamma;
       end
-      sigmaALL=gamma*model.sigmaALL+(1-gamma)*model.cov_mat;
+      sigmaALL=gamma.*model.sigmaALL+(1-gamma).*model.cov_mat;
       
       # diagonalization
       for k=1:model.K
-        [u_k d_k v_k]=svd((1-alpha)*sigmaALL+alpha*reshape(model.sigma(k,:),size(x_new,2),size(x_new,2)));
+        [u_k d_k v_k]=svd((1-alpha).*sigmaALL+alpha.*reshape(model.sigma(k,:),size(x_new,2),size(x_new,2)));
         u(k,:)=u_k(:);
         d_k_inv=eye(size(d_k));
         for i=1:size(d_k,1)
@@ -92,6 +88,17 @@ function y_hat=classify(x_new,model,varargin)
       end
         [val pos]=max(delta_k,[],2);
         y_hat=model.G(pos);
+
+    case 'RR-lda'
+      if ~exist('L', 'var') || isempty(L)
+        L=model.L;
+      end
+
+      z_new=x_new*model.a(:,1:L);
+      model.type='lda';
+      y_hat=classify(z_new,model);
+      model.type='RR-lda';
+ 
   endswitch
   
 end

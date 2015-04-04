@@ -4,8 +4,9 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
   # - linear regression of an indicator matrix
   # - linear discriminant analysis, diagonalized
   # - quadratic discriminant analysis with regularization, diagonalized
+  # - reduced rank LDA
   
-  # possible to change alpha and gamma in quadratic discriminant analysis
+  # possible to change alpha and gamma in quadratic discriminant analysis, L in reduced rank LDA
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -35,21 +36,14 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       x=[ones(m,1) x];
       beta_hat=pinv(x'*x)*x'*Y; 
       
-      model.G=G;   
-      model.K=K;
-      model.Y=Y;
       model.beta=beta_hat;
       
   # linear discriminant analysis
     case 'lda'
-      if ~exist('add1', 'var') || isempty(add1)
-        add1=0;
+      if ~exist('gamma', 'var') || isempty(gamma)
+        gamma=1;
       end
-      if add1==1
-        x=[ones(m,1) x];
-      end
-      
-      mu_k=zeros(K,1);
+
       pi_k=zeros(K,1);
       mu_k=zeros(size(x,2),K);
       sigma=zeros(size(x,2),size(x,2));
@@ -59,23 +53,22 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         mu_k(:,k)=mean(x(y==G(k),:),1);
         sigma=sigma+(1/(m-K))*(x(y==G(k),:)-ones(m_k(k),1)*mu_k(:,k)')'*(x(y==G(k),:)-ones(m_k(k),1)*mu_k(:,k)');
       end
-      model.G=G;
-      model.K=K;
-      model.Y=Y;
-      model.add1=add1;
+      
+      # scalar covariance matrix
+      cov_diag=diag(cov(x));
+      cov_mat=eye(size(x,2),size(x,2));
+      for i=1:numel(cov_diag)
+        cov_mat(i,i)=cov_diag(i);
+      end
+
+      model.gamma=gamma;
       model.pi_k=pi_k;
       model.mu_k=mu_k;
       model.sigma=sigma;   
+      model.cov_mat=cov_mat;
       
   # quadratic discriminant analysis with regularization
     case 'qda'   
-      if ~exist('add1', 'var') || isempty(add1)
-        add1=0;
-      end      
-      if add1==1
-        x=[ones(m,1) x];
-      end
-      
       if ~exist('alpha', 'var') || isempty(alpha)
         alpha=1;
       end
@@ -83,7 +76,6 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         gamma=1;
       end
       
-      mu_k=zeros(K,1);
       pi_k=zeros(K,1);
       mu_k=zeros(size(x,2),K);
       sigmaALL=zeros(size(x,2),size(x,2));
@@ -103,10 +95,6 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         cov_mat(i,i)=cov_diag(i);
       end
       
-      model.G=G;
-      model.K=K;
-      model.Y=Y;
-      model.add1=add1;
       model.alpha=alpha;
       model.gamma=gamma;
       model.pi_k=pi_k;
@@ -115,13 +103,51 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       model.sigmaALL=sigmaALL;
       model.cov_mat=cov_mat;
       
+  # reduced rank linear discriminant analysis
+    case 'RR-lda'
+      if ~exist('L', 'var') || isempty(L)
+        L=max([1 (K-1)]);
+      end
+      
+      pi_k=zeros(K,1);
+      mu_k=zeros(size(x,2),K);
+      mu_ALL=mean(x,1);
+      W=zeros(size(x,2),size(x,2));
+      B=zeros(size(x,2),size(x,2));
+
+      for k=1:K
+        m_k(k)=sum(y==G(k));
+        pi_k(k)=m_k(k)/m;
+        mu_k(:,k)=mean(x(y==G(k),:),1);
+        W=W+(x(y==G(k),:)-ones(m_k(k),1)*mu_k(:,k)')'*(x(y==G(k),:)-ones(m_k(k),1)*mu_k(:,k)');
+        B=B+m_k(k).*(mu_k(:,k)-mu_ALL')*(mu_k(:,k)-mu_ALL')';
+      end
+      [u_w d_w v_w]=svd(W);
+      d_w_sq=eye(size(d_w));
+      d_w_sq_inv=eye(size(d_w));
+      for i=1:size(d_w,1)
+        d_w_sq(i,i)=d_w(i,i).^0.5;
+	d_w_sq_inv(i,i)=d_w(i,i).^(-0.5);
+      end
+      W_sq_inv=u_w*d_w_sq_inv*v_w';
+      B_star=W_sq_inv'*B*W_sq_inv;
+      [u_star d_bstar v_bstar]=svd(B_star);
+      a=W_sq_inv*u_star;
+      z=x*a(:,1:L);
+
+      model=LinearClassification(z,y,0,'lda');
+      model.z=z;
+      model.a=a; 
+      model.L=L;
+
   endswitch
   
   # information to retrieve
+  model.G=G;
+  model.K=K;
+  model.Y=Y;
   model.type=type;
   model.x=x;
   model.y=y;
-  
-  
   
 end

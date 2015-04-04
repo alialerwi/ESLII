@@ -6,15 +6,25 @@ y=[ones(1000,1) x]*beta>0;
 
 standardize=1;
 
+y_hat=zeros(size(y));
+perf=100*mean(y==y_hat)
+y_hat=ones(size(y));
+perf=100*mean(y==y_hat)
+
 model=LinearClassification(x,y,standardize,'indicator_matrix');
 model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
 
-model1=LinearClassification(x,y,standardize,'lda');
-model1.type
-y_hat1=classify(x,model1);
-perf=100*mean(y==y_hat1)
+model=LinearClassification(x,y,standardize,'lda');
+model.type
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
+
+model=LinearClassification(x,y,standardize,'RR-lda');
+model.type
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
 
 model=LinearClassification(x,y,standardize,'qda','alpha','0.1','gamma','0.9');
 model.type
