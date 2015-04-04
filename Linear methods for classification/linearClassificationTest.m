@@ -11,30 +11,12 @@ model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
 
-model=LinearClassification(x,y,standardize,'lda');
-model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat)
-
-model=LinearClassification(x,y,standardize,'qda');
-model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat)
+model1=LinearClassification(x,y,standardize,'lda');
+model1.type
+y_hat1=classify(x,model1);
+perf=100*mean(y==y_hat1)
 
 model=LinearClassification(x,y,standardize,'qda','alpha','0.1','gamma','0.9');
-model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat)
-model=LinearClassification(x,y,standardize,'qda-diag','alpha','0.1','gamma','0.9');
-model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat)
-
-model=LinearClassification(x,y,standardize,'qda','alpha','0.9','gamma','0.3');
-model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat)
-model=LinearClassification(x,y,standardize,'qda-diag','alpha','0.9','gamma','0.3');
 model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
