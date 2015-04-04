@@ -114,9 +114,9 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       
       # scalar covariance matrix
       cov_diag=diag(cov(x));
-      cov_mat=eye(size(x,2),size(x,2));
+      covariance=eye(size(x,2),size(x,2));
       for i=1:numel(cov_diag)
-        cov_mat(i,i)=cov_diag(i);
+        covariance(i,i)=cov_diag(i);
       end
       
       model.G=G;
@@ -129,7 +129,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       model.mu_k=mu_k;
       model.sigma=sigma;
       model.sigmaALL=sigmaALL;
-      model.cov_mat=cov_mat;
+      model.covariance=covariance;
 
   # diagonalized quadratic discriminant analysis with regularization
     case 'qda-diag'
@@ -170,9 +170,9 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       
       # scalar covariance matrix
       cov_diag=diag(cov(x));
-      cov_mat=eye(size(x,2),size(x,2));
+      covariance=eye(size(x,2),size(x,2));
       for i=1:numel(cov_diag)
-        cov_mat(i,i)=cov_diag(i);
+        covariance(i,i)=cov_diag(i);
       end
       
       model.G=G;
@@ -185,7 +185,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       model.mu_k=mu_k;
       model.sigma=sigma;
       model.sigmaALL=sigmaALL;
-      model.cov_mat=cov_mat;
+      model.covariance=covariance;
       
   endswitch
   

@@ -95,6 +95,8 @@ function y_hat=classify(x_new,model,varargin)
       
       for k=1:model.K
         [u_k d_k v_k]=svd((1-alpha)*sigmaALL+alpha*reshape(model.sigma(k,:),size(x_new,2),size(x_new,2)));
+size(u(k,:))
+size(u_k(:))
         u(k,:)=u_k(:);
         d_k_inv=eye(size(d_k));
         for i=1:size(d_k,1)
