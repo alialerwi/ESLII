@@ -6,7 +6,8 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
   # - quadratic discriminant analysis with regularization, diagonalized
   # - reduced rank LDA
   
-  # possible to change alpha and gamma in quadratic discriminant analysis, L in reduced rank LDA
+  # possible to change alpha and gamma in quadratic discriminant analysis, L in reduced rank LDA,
+  #   lambda threshold and zero in logistic regression
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -139,6 +140,43 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       model.z=z;
       model.a=a; 
       model.L=L;
+
+  # linear regression of an indicator matrix
+    case 'logit'
+      if ~exist('lambda', 'var') || isempty(lambda)
+        lambda=0.0;
+      end
+      if ~exist('threshold', 'var') || isempty(threshold)
+        threshold=0.5;
+      end
+      if ~exist('zero', 'var') || isempty(zero)
+        zero=10^(-5);
+      end
+      x=[ones(m,1) x];
+      beta=zeros(n+1,1);
+      w=eye(m,m);
+      delta=Inf;
+it=0;
+      while delta>zero
+it=it+1
+	beta_old=beta;
+        p=logit(x,beta);
+        derivative=x'*(y-p);
+        for j=1:m
+          w(j,j)=p(i).*(1-p(i));
+        end
+        hessian=-x'*w*x;
+        z=x*beta+pinv(w)*(y-p);
+        beta=-pinv(hessian)*x'*w*z;
+
+	perf_old=mean(y==(logit(x,beta_old)>threshold));
+	perf_new=mean(y==(logit(x,beta)>threshold));
+	delta=perf_new-perf_old;
+	
+      end
+      model.lambda=lambda;
+      model.threshold=threshold;   
+      model.beta=beta;
 
   endswitch
   

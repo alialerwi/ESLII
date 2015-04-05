@@ -98,7 +98,16 @@ function y_hat=classify(x_new,model,varargin)
       model.type='lda';
       y_hat=classify(z_new,model);
       model.type='RR-lda';
- 
+
+    case 'logit'
+      if ~exist('threshold', 'var') || isempty(threshold)
+        threshold=model.threshold;
+      end
+      x_new=[ones(m,1) x_new];
+      g=logit(x_new,model.beta);
+      if length(model.G)==2
+        y_hat=(g>threshold);
+      end
   endswitch
   
 end

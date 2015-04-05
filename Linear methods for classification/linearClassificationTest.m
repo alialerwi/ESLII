@@ -30,3 +30,8 @@ model=LinearClassification(x,y,standardize,'qda','alpha','0.1','gamma','0.9');
 model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+
+model=LinearClassification(x,y,standardize,'logit','lamda','0.01');
+model.type
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)

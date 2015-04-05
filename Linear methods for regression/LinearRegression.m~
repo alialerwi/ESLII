@@ -38,7 +38,7 @@ function [model]=LinearRegression(x,y,standardize,type,varargin)
   # ridge regression
     case 'ridge'
       if ~exist('lambda', 'var') || isempty(lambda)
-        lambda=0.01;
+        lambda=0.1;
       end
       x=[ones(m,1) x];
       lambda_mat=lambda*eye(n+1);
