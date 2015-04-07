@@ -31,8 +31,7 @@ model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
 
-model=LinearClassification(x,y,standardize,'logit','lamda','0.01');
+model=LinearClassification(x,y,standardize,'multi-logit','lamda','0.01');
 model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat.y_hat)
-perf=100*mean(y==y_hat.y_hat1)
+#y_hat=classify(x,model);
+#perf=100*mean(y==y_hat.y_hat)

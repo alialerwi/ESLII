@@ -5,9 +5,11 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
   # - linear discriminant analysis, diagonalized
   # - quadratic discriminant analysis with regularization, diagonalized
   # - reduced rank LDA
+  # - logistic regression
+  # - multiclass logistic regression
   
   # possible to change alpha and gamma in quadratic discriminant analysis, L in reduced rank LDA,
-  #   lambda threshold and zero in logistic regression
+  #   lambda threshold and zero in logistic regression 
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -128,7 +130,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       d_w_sq_inv=eye(size(d_w));
       for i=1:size(d_w,1)
         d_w_sq(i,i)=d_w(i,i).^0.5;
-	d_w_sq_inv(i,i)=d_w(i,i).^(-0.5);
+	      d_w_sq_inv(i,i)=d_w(i,i).^(-0.5);
       end
       W_sq_inv=u_w*d_w_sq_inv*v_w';
       B_star=W_sq_inv'*B*W_sq_inv;
@@ -141,7 +143,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       model.a=a; 
       model.L=L;
 
-  # linear regression of an indicator matrix
+  # logistic regression - K=2
     case 'logit'
       if ~exist('lambda', 'var') || isempty(lambda)
         lambda=0.0;
@@ -154,35 +156,87 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       end
       x=[ones(m,1) x];
       beta=zeros(n+1,1);
-      beta1=zeros(n+1,1);
       w=eye(m,m);
       delta=Inf;
-fun=@(beta)multiloglikelihood(x,Y(:,2:end),beta);
       while delta>zero
-	beta_old=beta;
+	      beta_old=beta;
         p=logit(x,beta);
         derivative=x'*(y-p);
-nd=numerical_derivative(fun,beta);
-
         for j=1:m
           w(j,j)=p(i).*(1-p(i));
         end
         hessian=-x'*w*x;
-nh=numerical_hessian(fun,beta);
-
         z=x*beta+pinv(w)*(y-p);
-        beta=-pinv(hessian)*x'*w*z;
-beta1=beta1-pinv(nh)*nd;
-
-	perf_old=mean(y==(logit(x,beta_old)>threshold));
-	perf_new=mean(y==(logit(x,beta)>threshold));
-	delta=perf_new-perf_old;
+        beta=beta_old-pinv(hessian)*derivative;
+        alpha=1;
+        l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
+        while l_diff<0
+          alpha=alpha/2;
+          beta=beta_old-alpha*pinv(hessian)*derivative;
+          l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
+        end
+	      perf_old=mean(y==(logit(x,beta_old)>threshold));
+	      perf_new=mean(y==(logit(x,beta)>threshold));
+	      delta=perf_new-perf_old;
       end
+      
+      model.lambda=lambda;
+      model.threshold=threshold; 
+      model.p=p;  
+      model.beta=beta;
+
+  # multiclass logistic regression
+    case 'multi-logit'
+      if ~exist('lambda', 'var') || isempty(lambda)
+        lambda=0.0;
+      end
+      if ~exist('threshold', 'var') || isempty(threshold)
+        threshold=0.5;
+      end
+      if ~exist('zero', 'var') || isempty(zero)
+        zero=10^(-5);
+      end
+      x=[ones(m,1) x];
+      
+      # write x and y in required matrix form
+      X=zeros(m*(K-1),(n+1)*(K-1));
+      Y=zeros((K-1)*m,1);
+      for i=1:K-1
+        X((m*(i-1)+1):(m*i),((n+1)*(i-1)+1):((n+1)*i))=x;
+        Y((m*(i-1)+1):(m*i),1)=(y==G(i+1));# reference value is the first class
+      end
+      
+      beta=zeros((K-1)*(n+1),1);
+      P=zeros((K-1)*m,1);
+      
+      delta=Inf;
+      while delta>zero
+        beta_old=beta;
+        
+        P=logit(X,beta,K);
+        derivative=X'*(Y-P);
+        W=weight_matrix(X,P,K);
+        hessian=-X'*W*X;
+        beta=beta_old-pinv(hessian)*derivative;
+        alpha=1;
+        l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
+        #while l_diff<0
+        #  alpha=alpha/2;
+         # beta=beta_old-alpha*pinv(hessian)*derivative;
+         # l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
+        #end
+	      #perf_old=mean(y==(logit(x,beta_old)>threshold));
+	      #perf_new=mean(y==(logit(x,beta)>threshold));
+	      #delta=perf_new-perf_old;
+ delta=0
+      end
+      
       model.lambda=lambda;
       model.threshold=threshold;   
+      model.X=X;
+      model.P=P;
       model.beta=beta;
-model.beta1=beta1;
-
+      
   endswitch
   
   # information to retrieve

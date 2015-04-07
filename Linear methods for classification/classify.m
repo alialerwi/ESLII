@@ -37,7 +37,7 @@ function y_hat=classify(x_new,model,varargin)
       [u d v]=svd(sigma);
       d_sq_inv=eye(size(d));
       for i=1:size(d_sq_inv,1)
-	d_sq_inv(i,i)=d(i,i).^(-0.5);
+        d_sq_inv(i,i)=d(i,i).^(-0.5);
       end
       x_star=(d_sq_inv*u'*x_new')'; 
       mu_k_star=(d_sq_inv*u'*mu_k);
@@ -106,11 +106,16 @@ function y_hat=classify(x_new,model,varargin)
       end
       x_new=[ones(m,1) x_new];
       g=logit(x_new,model.beta);
-      g1=logit(x_new,model.beta1);
-      if length(model.G)==2
-        y_hat.y_hat=(g>threshold);
-        y_hat.y_hat1=(g1>threshold);
+      y_hat.y_hat=(g>threshold);
+      
+    case 'multi-logit'
+      if ~exist('threshold', 'var') || isempty(threshold)
+        threshold=model.threshold;
       end
+      x_new=[ones(m,1) x_new];
+      g=logit(x_new,model.beta);
+      y_hat.y_hat=(g>threshold);
+      
   endswitch
   
 end
