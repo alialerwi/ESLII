@@ -6,7 +6,8 @@ function y_hat=classify(x_new,model,varargin)
   # - quadratic discriminant analysis with regularization, diagonalized
   # - reduced rank LDA
 
-  # possible to change alpha and gamma in quadratic discriminant analysis
+  # possible to change gamma in LDA, alpha and gamma in quadratic discriminant analysis, 
+  #   L in reduced-rank LDA, threshold in logistic regression
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 

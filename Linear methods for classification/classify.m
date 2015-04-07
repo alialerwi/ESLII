@@ -106,8 +106,10 @@ function y_hat=classify(x_new,model,varargin)
       end
       x_new=[ones(m,1) x_new];
       g=logit(x_new,model.beta);
+      g1=logit(x_new,model.beta1);
       if length(model.G)==2
-        y_hat=(g>threshold);
+        y_hat.y_hat=(g>threshold);
+        y_hat.y_hat1=(g1>threshold);
       end
   endswitch
   

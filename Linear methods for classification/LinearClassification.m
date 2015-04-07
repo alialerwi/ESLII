@@ -154,29 +154,34 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       end
       x=[ones(m,1) x];
       beta=zeros(n+1,1);
+      beta1=zeros(n+1,1);
       w=eye(m,m);
       delta=Inf;
-it=0;
+fun=@(beta)multiloglikelihood(x,Y(:,2:end),beta);
       while delta>zero
-it=it+1
 	beta_old=beta;
         p=logit(x,beta);
         derivative=x'*(y-p);
+nd=numerical_derivative(fun,beta);
+
         for j=1:m
           w(j,j)=p(i).*(1-p(i));
         end
         hessian=-x'*w*x;
+nh=numerical_hessian(fun,beta);
+
         z=x*beta+pinv(w)*(y-p);
         beta=-pinv(hessian)*x'*w*z;
+beta1=beta1-pinv(nh)*nd;
 
 	perf_old=mean(y==(logit(x,beta_old)>threshold));
 	perf_new=mean(y==(logit(x,beta)>threshold));
 	delta=perf_new-perf_old;
-	
       end
       model.lambda=lambda;
       model.threshold=threshold;   
       model.beta=beta;
+model.beta1=beta1;
 
   endswitch
   
