@@ -8,8 +8,8 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
   # - logistic regression
   # - multiclass logistic regression
   
-  # possible to change alpha and gamma in quadratic discriminant analysis, L in reduced rank LDA,
-  #   lambda threshold and zero in logistic regression 
+  # possible to change alpha and gamma in quadratic discriminant analysis, L and gamma in reduced rank LDA,
+  #   lambda threshold and zero in logistic regression
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -138,7 +138,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       a=W_sq_inv*u_star;
       z=x*a(:,1:L);
 
-      model=LinearClassification(z,y,0,'lda');
+      model=LinearClassification(z,y,0,'lda','gamma','0');
       model.z=z;
       model.a=a; 
       model.L=L;
@@ -156,30 +156,33 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       end
       x=[ones(m,1) x];
       beta=zeros(n+1,1);
+      p=logit(x,beta);
       w=eye(m,m);
       delta=Inf;
       while delta>zero
 	      beta_old=beta;
-        p=logit(x,beta);
-        derivative=x'*(y-p);
+        derivative=x'*(Y(:,2)-p);
         for j=1:m
           w(j,j)=p(i).*(1-p(i));
         end
         hessian=-x'*w*x;
-        z=x*beta+pinv(w)*(y-p);
+        z=x*beta+pinv(w)*(Y(:,2)-p);
         beta=beta_old-pinv(hessian)*derivative;
         alpha=1;
-        l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
+        l_diff=loglikelihood(x,Y(:,2),beta)-loglikelihood(x,Y(:,2),beta_old);
         while l_diff<0
           alpha=alpha/2;
           beta=beta_old-alpha*pinv(hessian)*derivative;
-          l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
+          l_diff=loglikelihood(x,Y(:,2),beta)-loglikelihood(x,Y(:,2),beta_old);
         end
-	      perf_old=mean(y==(logit(x,beta_old)>threshold));
-	      perf_new=mean(y==(logit(x,beta)>threshold));
+        p=logit(x,beta);
+      
+	      perf_old=mean(Y(:,2)==(G((logit(x,beta_old)>threshold)+1)));
+	      perf_new=mean(Y(:,2)==(G((logit(x,beta)>threshold)+1)));
 	      delta=perf_new-perf_old;
       end
-      
+      loglikelihood(x,Y(:,2),beta)
+      multiloglikelihood(x,Y(:,2),beta)
       model.lambda=lambda;
       model.threshold=threshold; 
       model.p=p;  
@@ -212,25 +215,28 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       delta=Inf;
       while delta>zero
         beta_old=beta;
-        
         P=logit(X,beta,K);
         derivative=X'*(Y-P);
         W=weight_matrix(X,P,K);
         hessian=-X'*W*X;
         beta=beta_old-pinv(hessian)*derivative;
         alpha=1;
-        l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
-        #while l_diff<0
-        #  alpha=alpha/2;
-         # beta=beta_old-alpha*pinv(hessian)*derivative;
-         # l_diff=loglikelihood(x,y,beta)-loglikelihood(x,y,beta_old);
-        #end
-	      #perf_old=mean(y==(logit(x,beta_old)>threshold));
-	      #perf_new=mean(y==(logit(x,beta)>threshold));
-	      #delta=perf_new-perf_old;
- delta=0
+        l_diff=multiloglikelihood(X,Y,beta,K)-multiloglikelihood(X,Y,beta_old,K);
+        while l_diff<0
+          alpha=alpha/2;
+          beta=beta_old-alpha*pinv(hessian)*derivative;
+          [l p]=multiloglikelihood(X,Y,beta,K);
+          [l_old p_old]=multiloglikelihood(X,Y,beta_old,K);
+          l_diff=l-l_old;
+        end
+        [l p]=multiloglikelihood(X,Y,beta,K);
+        [l_old p_old]=multiloglikelihood(X,Y,beta_old,K);
+        [val pos]=max(p,[],2);
+        [val pos_old]=max(p_old,[],2);
+	      perf_old=mean(y==G(pos_old));
+	      perf_new=mean(y==G(pos));
+	      delta=perf_new-perf_old;
       end
-      
       model.lambda=lambda;
       model.threshold=threshold;   
       model.X=X;

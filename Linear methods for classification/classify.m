@@ -106,15 +106,24 @@ function y_hat=classify(x_new,model,varargin)
       end
       x_new=[ones(m,1) x_new];
       g=logit(x_new,model.beta);
-      y_hat.y_hat=(g>threshold);
+      y_hat=model.G((g>threshold)+1);
       
     case 'multi-logit'
       if ~exist('threshold', 'var') || isempty(threshold)
         threshold=model.threshold;
       end
+      
       x_new=[ones(m,1) x_new];
-      g=logit(x_new,model.beta);
-      y_hat.y_hat=(g>threshold);
+      X=zeros(m*(model.K-1),(n+1)*(model.K-1));
+      for i=1:(model.K-1)
+        X((m*(i-1)+1):(m*i),((n+1)*(i-1)+1):((n+1)*i))=x_new;
+      end
+      P=logit(X,model.beta,model.K);   
+      p=reshape(P,m,(model.K-1));
+      p=[(ones(m,1)-sum(p,2)) p];
+      p(1:10,:)
+      [val pos]=max(p,[],2);
+	    y_hat=model.G(pos);
       
   endswitch
   
