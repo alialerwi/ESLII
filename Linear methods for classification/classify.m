@@ -6,8 +6,8 @@ function y_hat=classify(x_new,model,varargin)
   # - quadratic discriminant analysis with regularization, diagonalized
   # - reduced rank LDA
 
-  # possible to change gamma in LDA, alpha and gamma in quadratic discriminant analysis, 
-  #   L in reduced-rank LDA, threshold in logistic regression
+  # possible to change alpha and gamma in quadratic discriminant analysis, L and gamma in reduced rank LDA,
+  #   lambda threshold and zero in logistic regression, lambda penalty(L0,L1,L2) and zero in multiclass logistic regression
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -108,11 +108,7 @@ function y_hat=classify(x_new,model,varargin)
       g=logit(x_new,model.beta);
       y_hat=model.G((g>threshold)+1);
       
-    case 'multi-logit'
-      if ~exist('threshold', 'var') || isempty(threshold)
-        threshold=model.threshold;
-      end
-      
+    case {'multi-logit','L-multi-logit'} 
       x_new=[ones(m,1) x_new];
       X=zeros(m*(model.K-1),(n+1)*(model.K-1));
       for i=1:(model.K-1)
@@ -121,7 +117,6 @@ function y_hat=classify(x_new,model,varargin)
       P=logit(X,model.beta,model.K);   
       p=reshape(P,m,(model.K-1));
       p=[(ones(m,1)-sum(p,2)) p];
-      p(1:10,:)
       [val pos]=max(p,[],2);
 	    y_hat=model.G(pos);
       

@@ -9,7 +9,7 @@ u=zeros(1000,1);
   u(y<=-0.7)="a";
   u(y>0)="b";
   u(y>0.7)="c";   
-  hist(u)
+
 y=u;
   
 standardize=1;
@@ -39,12 +39,19 @@ model.type
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
 
-#model1=LinearClassification(x,y,standardize,'logit','lamda','0.01');
-#model1.type
-#y_hat1=classify(x,model1);
-#perf=100*mean(y==y_hat1)
+model=LinearClassification(x,y,standardize,'logit');
+model.type
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
 
-model2=LinearClassification(x,y,standardize,'multi-logit','lamda','0.01');
-model2.type
-y_hat2=classify(x,model2);
-perf=100*mean(y==y_hat2)
+model=LinearClassification(x,y,standardize,'multi-logit');
+model.type
+loglikelihood=model.loglikelihood
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
+
+model=LinearClassification(x,y,standardize,'L-multi-logit','lambda','1000','penalty','2');
+model.type
+loglikelihood=model.loglikelihood
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
