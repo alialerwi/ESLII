@@ -13,40 +13,85 @@ u=zeros(1000,1);
 y=u;
   
 standardize=1;
-
 y_hat=zeros(size(y));
 perf=100*mean(y==y_hat)
 y_hat=ones(size(y));
 perf=100*mean(y==y_hat)
 
+disp('------------------------------------------------------')
+tic
 model=LinearClassification(x,y,standardize,'indicator_matrix');
-model.type
+disp(strcat('model type:',' ',model.type));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+toc
 
+disp('------------------------------------------------------')
+tic
 model=LinearClassification(x,y,standardize,'lda');
-model.type
+disp(strcat('model type:',' ',model.type));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+toc
 
+disp('------------------------------------------------------')
+tic
 model=LinearClassification(x,y,standardize,'RR-lda');
-model.type
+disp(strcat('model type:',' ',model.type));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+toc
 
+disp('------------------------------------------------------')
+tic
 model=LinearClassification(x,y,standardize,'qda','alpha','0.1','gamma','0.9');
-model.type
+disp(strcat('model type:',' ',model.type));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+toc
 
+disp('------------------------------------------------------')
+tic
 model=LinearClassification(x,y,standardize,'logit');
-model.type
-loglikelihood=model.loglikelihood
+disp(strcat('model type:',' ',model.type));
+disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+toc
 
-model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','2');
-model.type
-loglikelihood=model.loglikelihood
+disp('------------------------------------------------------')
+tic
+model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','-1');
+disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
+disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
+toc
+
+disp('------------------------------------------------------')
+tic
+model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','0');
+disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
+disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
+toc
+
+disp('------------------------------------------------------')
+tic
+model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','1');
+disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
+disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
+toc
+
+disp('------------------------------------------------------')
+tic
+model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','2');
+disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
+disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
+y_hat=classify(x,model);
+perf=100*mean(y==y_hat)
+toc
+

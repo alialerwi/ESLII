@@ -9,7 +9,7 @@ function y_hat=classify(x_new,model,varargin)
   # - multiclass logistic regression
   
   # possible to change alpha and gamma in quadratic discriminant analysis, L and gamma in reduced rank LDA,
-  #   lambda threshold and zero in logistic regression, lambda penalty(L0,L1,L2) and zero in multiclass logistic regression
+  #   lambda threshold and zero in logistic regression, lambda penalty(-1,0,1,2) and zero in multiclass logistic regression
 
   
   # evaluate arguments in varargin

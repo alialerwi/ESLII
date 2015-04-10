@@ -28,8 +28,12 @@ function [l p]=multiloglikelihood(X,Y,beta,K,varargin)
   
   # calculate log-likelihood
   switch penalty
-    case 0
+    case -1
       l=sum(log(sum(y.*p,2)));
+    case 0
+      lambda_vec=lambda*ones(size(beta));
+      lambda_vec((n+1)*(0:(K-2))+1,1)=0;
+      l=sum(log(sum(y.*p,2)))-sum(lambda_vec);
     case 1
       lambda_vec=lambda*ones(size(beta));
       lambda_vec((n+1)*(0:(K-2))+1,1)=0;

@@ -22,10 +22,13 @@ function hessian=loglikelihood_hessian(X,beta,K,varargin)
   W=weight_matrix(X,P,K);
   
   switch penalty
-    case 0
+    case {-1,0}
       hessian=-X'*W*X;  
     case 1
-    ### not implemented
+      epsilon=10^(-5);
+      lambda_mat=lambda*eye(size(beta,1),size(beta,1));
+      lambda_mat((n+1)*(0:(K-2))+1,(n+1)*(0:(K-2))+1)=0;
+      hessian=-X'*W*X-2*lambda_mat.*((epsilon./(beta+epsilon))*(epsilon./(beta+epsilon))');#numerical approximation of sign derivative
     case 2
       lambda_mat=lambda*eye(size(beta,1),size(beta,1));
       lambda_mat((n+1)*(0:(K-2))+1,(n+1)*(0:(K-2))+1)=0;

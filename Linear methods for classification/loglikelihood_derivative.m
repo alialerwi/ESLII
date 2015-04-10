@@ -21,10 +21,12 @@ function derivative=loglikelihood_derivative(X,Y,beta,K,varargin)
   P=logit(X,beta,K);
   
   switch penalty
-    case 0
+    case {-1,0}
       derivative=X'*(Y-P);
     case 1
-    ### not implemented
+      lambda_vec=lambda*ones(size(beta));
+      lambda_vec((n+1)*(0:(K-2))+1,1)=0;
+      derivative=X'*(Y-P)-2*lambda_vec.*sign(beta);
     case 2
       lambda_vec=lambda*ones(size(beta));
       lambda_vec((n+1)*(0:(K-2))+1,1)=0;
