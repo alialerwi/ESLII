@@ -182,68 +182,14 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
 	        perf_new=mean(Y(:,2)==(G((logit(x,beta)>threshold)+1)));
 	        delta=perf_new-perf_old;
         end
+        model.loglikelihood=l;
         model.threshold=threshold; 
         model.p=p;  
         model.beta=beta;
       end
-    
+      
   # multiclass logistic regression
     case 'multi-logit'
-      if ~exist('lambda', 'var') || isempty(lambda)
-        lambda=0.0;
-      end
-      if ~exist('threshold', 'var') || isempty(threshold)
-        threshold=0.5;
-      end
-      if ~exist('zero', 'var') || isempty(zero)
-        zero=10^(-5);
-      end
-      x=[ones(m,1) x];
-      
-      # write x and y in required matrix form
-      X=zeros(m*(K-1),(n+1)*(K-1));
-      Y=zeros((K-1)*m,1);
-      for i=1:K-1
-        X((m*(i-1)+1):(m*i),((n+1)*(i-1)+1):((n+1)*i))=x;
-        Y((m*(i-1)+1):(m*i),1)=(y==G(i+1));# reference value is the first class
-      end
-      
-      beta=zeros((K-1)*(n+1),1);
-      P=zeros((K-1)*m,1);
-      
-      delta=Inf;
-      while delta>zero
-        beta_old=beta;
-        P=logit(X,beta,K);
-        derivative=X'*(Y-P);
-        W=weight_matrix(X,P,K);
-        hessian=-X'*W*X;
-        beta=beta_old-pinv(hessian)*derivative;
-        alpha=1;
-        l_diff=multiloglikelihood(X,Y,beta,K)-multiloglikelihood(X,Y,beta_old,K);
-        while l_diff<0
-          alpha=alpha/2;
-          beta=beta_old-alpha*pinv(hessian)*derivative;
-          [l p]=multiloglikelihood(X,Y,beta,K);
-          [l_old p_old]=multiloglikelihood(X,Y,beta_old,K);
-          l_diff=l-l_old;
-        end
-        [l p]=multiloglikelihood(X,Y,beta,K);
-        [l_old p_old]=multiloglikelihood(X,Y,beta_old,K);
-        [val pos]=max(p,[],2);
-        [val pos_old]=max(p_old,[],2);
-	      perf_old=mean(y==G(pos_old));
-	      perf_new=mean(y==G(pos));
-	      delta=perf_new-perf_old;
-      end
-      model.loglikelihood=l;
-      model.threshold=threshold;   
-      model.X=X;
-      model.P=P;
-      model.beta=beta;
-      
-  # multiclass logistic regression
-    case 'L-multi-logit'
       if ~exist('lambda', 'var') || isempty(lambda)
         lambda=0.0;
       end

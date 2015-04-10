@@ -41,16 +41,11 @@ perf=100*mean(y==y_hat)
 
 model=LinearClassification(x,y,standardize,'logit');
 model.type
-y_hat=classify(x,model);
-perf=100*mean(y==y_hat)
-
-model=LinearClassification(x,y,standardize,'multi-logit');
-model.type
 loglikelihood=model.loglikelihood
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
 
-model=LinearClassification(x,y,standardize,'L-multi-logit','lambda','1000','penalty','2');
+model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','2');
 model.type
 loglikelihood=model.loglikelihood
 y_hat=classify(x,model);
