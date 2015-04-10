@@ -1,15 +1,15 @@
 function y_hat=classify(x_new,model,varargin)
 
   # linear models implemented: 
-  # - indicator_matrix
+  # - linear regression of an indicator matrix
   # - linear discriminant analysis, diagonalized
   # - quadratic discriminant analysis with regularization, diagonalized
   # - reduced rank LDA
   # - logistic regression
-  # - multiclass logistic regression
+  # - multiclass logistic regression with regularization
   
   # possible to change alpha and gamma in quadratic discriminant analysis, L and gamma in reduced rank LDA,
-  #   lambda threshold and zero in logistic regression, lambda penalty(-1,0,1,2) and zero in multiclass logistic regression
+  #   lambda threshold in logistic regression, lambda penalty(-1,0,1,2) in multiclass logistic regression with regularization
 
   
   # evaluate arguments in varargin

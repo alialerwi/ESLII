@@ -26,7 +26,7 @@ function derivative=loglikelihood_derivative(X,Y,beta,K,varargin)
     case 1
       lambda_vec=lambda*ones(size(beta));
       lambda_vec((n+1)*(0:(K-2))+1,1)=0;
-      derivative=X'*(Y-P)-2*lambda_vec.*sign(beta);
+      derivative=X'*(Y-P)-lambda_vec.*sign(beta);
     case 2
       lambda_vec=lambda*ones(size(beta));
       lambda_vec((n+1)*(0:(K-2))+1,1)=0;

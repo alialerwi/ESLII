@@ -6,10 +6,10 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
   # - quadratic discriminant analysis with regularization, diagonalized
   # - reduced rank LDA
   # - logistic regression
-  # - multiclass logistic regression
+  # - multiclass logistic regression with regularization
   
   # possible to change alpha and gamma in quadratic discriminant analysis, L and gamma in reduced rank LDA,
-  #   lambda threshold and zero in logistic regression, lambda penalty(-1,0,1,2) and zero in multiclass logistic regression
+  #   lambda threshold in logistic regression, lambda penalty(-1,0,1,2) in multiclass logistic regression with regularization
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -159,8 +159,9 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         beta=zeros(n+1,1);
         p=logit(x,beta);
         w=eye(m,m);
-        delta=Inf;
-        while delta>zero
+        
+        run=0;
+        while run<3
   	      beta_old=beta;
           derivative=x'*(Y(:,2)-p);
           for j=1:m
@@ -180,7 +181,11 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         
 	        perf_old=mean(Y(:,2)==(G((logit(x,beta_old)>threshold)+1)));
 	        perf_new=mean(Y(:,2)==(G((logit(x,beta)>threshold)+1)));
-	        delta=perf_new-perf_old;
+	        if perf_new<=perf_old;
+            run=run+1;
+          else 
+            run=0;
+          end
         end
         model.loglikelihood=l;
         model.threshold=threshold; 
@@ -197,7 +202,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         penalty=0;
       end
       if ~exist('zero', 'var') || isempty(zero)
-        zero=10^(-5);
+        zero=10^(-10);
       end
       x=[ones(m,1) x];
       
@@ -212,8 +217,8 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       beta=zeros((K-1)*(n+1),1);
       P=zeros((K-1)*m,1);
       
-      delta=Inf;
-      while delta>zero
+      run=0;
+      while run<3
         beta_old=beta;
         
         derivative=loglikelihood_derivative(X,Y,beta,K,'lambda',lambda,'penalty',penalty);
@@ -238,7 +243,11 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
         [val pos_old]=max(p_old,[],2);
 	      perf_old=mean(y==G(pos_old));
 	      perf_new=mean(y==G(pos));
-	      delta=perf_new-perf_old;
+        if perf_new<=perf_old
+          run=run+1;
+        else
+          run=0;
+        end
       end
       model.lambda=lambda;
       model.penalty=penalty;

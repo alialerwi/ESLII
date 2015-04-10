@@ -25,14 +25,15 @@ function hessian=loglikelihood_hessian(X,beta,K,varargin)
     case {-1,0}
       hessian=-X'*W*X;  
     case 1
-      epsilon=10^(-5);
+      epsilon=10^(-4);
       lambda_mat=lambda*eye(size(beta,1),size(beta,1));
       lambda_mat((n+1)*(0:(K-2))+1,(n+1)*(0:(K-2))+1)=0;
-      hessian=-X'*W*X-2*lambda_mat.*((epsilon./(beta+epsilon))*(epsilon./(beta+epsilon))');#numerical approximation of sign derivative
+      sign_dev=((epsilon.^2)./((beta.^2+epsilon.^2).^(1.5))).^0.5;
+      hessian=-X'*W*X-lambda_mat.*(sign_dev*sign_dev');#numerical approximation of sign derivative
     case 2
       lambda_mat=lambda*eye(size(beta,1),size(beta,1));
       lambda_mat((n+1)*(0:(K-2))+1,(n+1)*(0:(K-2))+1)=0;
-      hessian=-X'*W*X-2*lambda_mat;  
+      hessian=-X'*W*X-2*lambda_mat; 
   
   endswitch 
   
