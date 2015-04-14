@@ -8,8 +8,9 @@ function [basis]=BasisExpansions(x,M,K,type)
   # possible to change
   
   switch type
+    x=x(:);
     case 'b-splines'
-      x=x(:);
+       
       epsilon=linspace(min(x),max(x),K+2);
       tau=[linspace((-10^-15)*range(x)+min(x),min(x),M) epsilon(2:(end-1)) linspace(max(x),(10^-15)*range(x)+max(x),M)];
       for m=1:M
@@ -25,7 +26,9 @@ function [basis]=BasisExpansions(x,M,K,type)
       end
       basis=b;
 
-    case ''
+    case 'natural-cubic'
+      n=zeros(numel(x),1);
+      
     
   endswitch
   
