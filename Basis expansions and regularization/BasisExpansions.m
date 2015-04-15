@@ -37,7 +37,7 @@ function [basis]=BasisExpansions(x,df,type,varargin)
 
     case 'natural-cubic'
       M=4;
-      K=df
+      K=df;
       epsilon=linspace(min(x),max(x),K+2)(2:(end-1));
       N=ones(size(x,1),1);
       N=[N x];
@@ -49,7 +49,11 @@ function [basis]=BasisExpansions(x,df,type,varargin)
         N=[N (dk-dK_1)];
       end
       basis=N;
-      
+    
+    case 'smoothin-splines'
+      K=numel(unique(x));
+      epsilon=linspace(min(x),max(x),K+2);
+      basis=BasisExpansions(x,K,'natural-cubic');
     
   endswitch
   
