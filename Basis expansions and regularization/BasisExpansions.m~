@@ -57,11 +57,6 @@ function [basis]=BasisExpansions(x,df,type,varargin)
       B=BasisExpansions(x,df,'b-splines','M','4');
       basis=B;
       penalty=0;
-for j=1:size(B,2)
-  for k=1:size(B,2)
-    
-  end
-end
       theta=pinv(B'*B+lambda*penalty)*B'*y;
       
     
