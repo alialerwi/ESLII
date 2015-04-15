@@ -54,6 +54,7 @@ function [basis]=BasisExpansions(x,df,type,varargin)
       K=numel(unique(x));
       epsilon=linspace(min(x),max(x),K+2);
       basis=BasisExpansions(x,K,'natural-cubic');
+      penalty
     
   endswitch
   
