@@ -2,15 +2,15 @@ function [basis]=BasisExpansions(x,M,K,type)
 
   # basis expansion methods implemented:
   #  - B-splines
-  #
+  #  - natural cubic splines
   #
   
   # possible to change
   
+  x=x(:);
+  
   switch type
-    x=x(:);
     case 'b-splines'
-       
       epsilon=linspace(min(x),max(x),K+2);
       tau=[linspace((-10^-15)*range(x)+min(x),min(x),M) epsilon(2:(end-1)) linspace(max(x),(10^-15)*range(x)+max(x),M)];
       for m=1:M
@@ -27,7 +27,17 @@ function [basis]=BasisExpansions(x,M,K,type)
       basis=b;
 
     case 'natural-cubic'
-      n=zeros(numel(x),1);
+      epsilon=linspace(min(x),max(x),K+2)(2:(end-1));
+      N=ones(size(x,1),1);
+      N=[N x];
+      
+      k=K-1;
+      dK_1=((((x>=epsilon(k)).*(x-epsilon(k))).^3)-(((x>=epsilon(end)).*(x-epsilon(end))).^3))./(epsilon(end)-epsilon(k));
+      for k=1:(K-2)
+        dk=((((x>=epsilon(k)).*(x-epsilon(k))).^3)-(((x>=epsilon(end)).*(x-epsilon(end))).^3))./(epsilon(end)-epsilon(k));
+        N=[N (dk-dK_1)];
+      end
+      basis=N;
       
     
   endswitch
