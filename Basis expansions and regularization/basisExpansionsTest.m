@@ -1,10 +1,10 @@
 clear, close all, clc
 
-x=-100:0.1:100;
-M=2;
-K=5;
+x=-1:0.1:1;
+df=7;
 
-basis=BasisExpansions(x,M,K,'b-splines');
-basis=BasisExpansions(x,M,K,'natural-cubic');
-plot(x,basis)
+basis1=BasisExpansions(x,df,'b-splines');
+plot(x,basis1)
 
+basis2=BasisExpansions(x,df,'natural-cubic');
+plot(x,basis2)
