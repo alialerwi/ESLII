@@ -3,9 +3,9 @@ function [basis]=BasisExpansions(x,df,type,varargin)
   # basis expansion methods implemented:
   #  - B-splines
   #  - natural cubic splines
-  #
+  #  - smoothing splines
   
-  # possible to change
+  # possible to change M in b-splines, lambda in smoothing splines
   
   # evaluate arguments in varargin
   for i=2:2:numel(varargin) 
@@ -19,7 +19,7 @@ function [basis]=BasisExpansions(x,df,type,varargin)
       if ~exist('M', 'var') || isempty(M)
         M=4;
       end
-      K=df-M
+      K=df-M;
       epsilon=linspace(min(x),max(x),K+2);
       tau=[linspace((-10^-15)*range(x)+min(x),min(x),M) epsilon(2:(end-1)) linspace(max(x),(10^-15)*range(x)+max(x),M)];
       for m=1:M
@@ -49,12 +49,30 @@ function [basis]=BasisExpansions(x,df,type,varargin)
         N=[N (dk-dK_1)];
       end
       basis=N;
+<<<<<<< HEAD
     
     case 'smoothin-splines'
       K=numel(unique(x));
       epsilon=linspace(min(x),max(x),K+2);
       basis=BasisExpansions(x,K,'natural-cubic');
       penalty
+=======
+	
+    case 'smoothing'
+      if ~exist('lambda', 'var') || isempty(lambda)
+        lambda=0;
+      end
+      B=BasisExpansions(x,df,'b-splines','M','4');
+      basis=B;
+      penalty=0;
+for j=1:size(B,2)
+  for k=1:size(B,2)
+    
+  end
+end
+      theta=pinv(B'*B+lambda*penalty)*B'*y;
+      
+>>>>>>> 503ee27582da0f69e069d4ea8101d28566715adc
     
   endswitch
   
