@@ -16,25 +16,8 @@ function [basis]=BasisExpansions(x,df,type,varargin)
   
   switch type
     case 'b-splines'
-      if ~exist('M', 'var') || isempty(M)
-        M=4;
-      end
-      K=df-M;
-      epsilon=linspace(min(x),max(x),K+2);
-      tau=[linspace((-10^-15)*range(x)+min(x),min(x),M) epsilon(2:(end-1)) linspace(max(x),(10^-15)*range(x)+max(x),M)];
-      for m=1:M
-        b=zeros(numel(x),K+2*M-m);
-        for i=1:(K+2*M-m)
-          if m==1
-              b(:,i)=(x>=tau(i+m-1))&(x<tau(i+m));
-          else
-              b(:,i)=b_prev(:,i).*(x-tau(i))/(tau(i+m-1)-tau(i))+b_prev(:,i+1).*(tau(i+m)-x)/(tau(i+m)-tau(i+1));
-          end
-        end
-        b_prev=b;
-      end
-      basis=b;
-
+      [basis dbasis ddbasis]=B(x,df,varargin);
+      
     case 'natural-cubic'
       M=4;
       K=df;
@@ -49,32 +32,31 @@ function [basis]=BasisExpansions(x,df,type,varargin)
         N=[N (dk-dK_1)];
       end
       basis=N;
-<<<<<<< HEAD
-    
-    case 'smoothin-splines'
-      K=numel(unique(x));
-      epsilon=linspace(min(x),max(x),K+2);
-      basis=BasisExpansions(x,K,'natural-cubic');
-      penalty
-=======
 	
     case 'smoothing'
       if ~exist('lambda', 'var') || isempty(lambda)
         lambda=0;
       end
-      B=BasisExpansions(x,df,'b-splines','M','4');
-      basis=B;
-      penalty=0;
-for j=1:size(B,2)
-  for k=1:size(B,2)
-    
-  end
-end
-      theta=pinv(B'*B+lambda*penalty)*B'*y;
       
->>>>>>> 503ee27582da0f69e069d4ea8101d28566715adc
-    
+      #df=length(x)+4;
+      [basis dbasis ddbasis]=B(x,df,varargin);
+      penalty=zeros(size(ddbasis,2),size(ddbasis,2));
+      for j=1:size(ddbasis,2)
+        for k=1:size(ddbasis,2)
+          penalty(j,k)=ddbasis(:,j)'*ddbasis(:,k);
+        end
+      end
+      
+      #size(basis)
+      #size(ddbasis)
+      #size(penalty)
+
+      theta=pinv(basis'*basis+lambda*penalty)*basis'*unique(y);
+      #theta=pinv(basis'*basis)*basis'*y;
+      basis=basis*theta;
+      #basis=theta;
+      
   endswitch
   
-
 end
+
