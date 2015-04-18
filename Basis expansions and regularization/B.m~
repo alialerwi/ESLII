@@ -11,7 +11,7 @@ function [basis dbasis ddbasis]=B(x,varargin)
 epsilon=epsilon(2:(end-1));
 K=length(epsilon);
 
-  tau=[linspace((-10^-5)*range(x)+min(x),min(x),M) epsilon linspace(max(x),(10^-5)*range(x)+max(x),M)]
+  tau=[linspace((-10^-3)*range(x)+min(x),min(x),M) epsilon linspace(max(x),(10^-3)*range(x)+max(x),M)]
 
   for m=1:M
     b=zeros(numel(x),K+2*M-m);

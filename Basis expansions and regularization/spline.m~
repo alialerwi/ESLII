@@ -1,0 +1,16 @@
+function h=1Dspline(x,y,M,df)
+
+  m=length(x);
+  knot=unique(x);
+  K=length(knot);
+  h=zeros(m,M+K);
+    for j=1:M
+      h(:,j)=x.^(j-1);
+    end
+    for l=1:K
+      h(:,M+l)=(x>knot(l)).*(x-knot(l)).^(M-1);
+    end
+
+    plot(linspace(min(x),max(x),K*2),h)
+
+end
