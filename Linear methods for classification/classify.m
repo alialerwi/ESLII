@@ -1,4 +1,4 @@
-function y_hat=classify(x_new,model,varargin)
+function y_hat=classify(x_new,model,options={})
 
   # linear models implemented: 
   # - linear regression of an indicator matrix
@@ -12,9 +12,9 @@ function y_hat=classify(x_new,model,varargin)
   #   lambda threshold in logistic regression, lambda penalty(-1,0,1,2) in multiclass logistic regression with regularization
 
   
-  # evaluate arguments in varargin
-  for i=2:2:numel(varargin) 
-   eval(strcat(varargin{(i-1)}, '=', varargin{i}));
+  # evaluate arguments in options
+  for i=2:2:numel(options) 
+   eval(strcat(options{(i-1)}, '=', options{i}));
   end
   
   [m n]=size(x_new);

@@ -1,4 +1,4 @@
-function [model]=LinearClassification(x,y,standardize,type,varargin)
+function [model]=LinearClassification(x,y,standardize,type,options={})
 
   # linear models implemented: 
   # - linear regression of an indicator matrix
@@ -11,9 +11,9 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
   # possible to change alpha and gamma in quadratic discriminant analysis, L and gamma in reduced rank LDA,
   #   lambda threshold in logistic regression, lambda penalty(-1,0,1,2) in multiclass logistic regression with regularization
   
-  # evaluate arguments in varargin
-  for i=2:2:numel(varargin) 
-   eval(strcat(varargin{(i-1)}, '=', varargin{i},';'));
+  # evaluate arguments in options
+  for i=2:2:numel(options) 
+   eval(strcat(options{(i-1)}, '=', options{i},';'));
   end
     
   [m n]=size(x);
@@ -138,7 +138,8 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       a=W_sq_inv*u_star;
       z=x*a(:,1:L);
 
-      model=LinearClassification(z,y,0,'lda','gamma','0');
+      options={'gamma','0'};
+      model=LinearClassification(z,y,0,'lda',options);
       model.z=z;
       model.a=a; 
       model.L=L;
@@ -147,7 +148,7 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
     case 'logit'
       if K>2
         type='multi-logit';
-        model=LinearClassification(x,y,standardize,type,varargin);
+        model=LinearClassification(x,y,standardize,type,options);
       else
         if ~exist('threshold', 'var') || isempty(threshold)
           threshold=0.5;
@@ -221,24 +222,25 @@ function [model]=LinearClassification(x,y,standardize,type,varargin)
       while run<3
         beta_old=beta;
         
-        derivative=loglikelihood_derivative(X,Y,beta,K,'lambda',lambda,'penalty',penalty);
-        hessian=loglikelihood_hessian(X,beta,K,'lambda',lambda,'penalty',penalty);
+        options={'lambda',lambda,'penalty',penalty};
+        derivative=loglikelihood_derivative(X,Y,beta,K,options);
+        hessian=loglikelihood_hessian(X,beta,K,options);
         
         beta=beta_old-pinv(hessian)*derivative;
         
         alpha=1;
-        l=multiloglikelihood(X,Y,beta,K,'lambda',lambda,'penalty',penalty);
-        l_old=multiloglikelihood(X,Y,beta_old,K,'lambda',lambda,'penalty',penalty);
+        l=multiloglikelihood(X,Y,beta,K,options);
+        l_old=multiloglikelihood(X,Y,beta_old,K,options);
         l_diff=l-l_old;
         while l_diff<0
           alpha=alpha/2;
           beta=beta_old-alpha*pinv(hessian)*derivative;
-          [l p]=multiloglikelihood(X,Y,beta,K,'lambda',lambda,'penalty',penalty);
-          [l_old p_old]=multiloglikelihood(X,Y,beta_old,K,'lambda',lambda,'penalty',penalty);
+          [l p]=multiloglikelihood(X,Y,beta,K,options);
+          [l_old p_old]=multiloglikelihood(X,Y,beta_old,K,options);
           l_diff=l-l_old;
         end
-        [l p]=multiloglikelihood(X,Y,beta,K,'lambda',lambda,'penalty',penalty);
-        [l_old p_old]=multiloglikelihood(X,Y,beta_old,K,'lambda',lambda,'penalty',penalty);
+        [l p]=multiloglikelihood(X,Y,beta,K,options);
+        [l_old p_old]=multiloglikelihood(X,Y,beta_old,K,options);
         [val pos]=max(p,[],2);
         [val pos_old]=max(p_old,[],2);
 	      perf_old=mean(y==G(pos_old));

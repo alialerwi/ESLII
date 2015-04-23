@@ -1,4 +1,4 @@
-function [model]=LineaeRegressionMulti(x,y,standardize,type,varargin)
+function [model]=LinearRegressionMulti(x,y,standardize,type,options={})
 
   # linear models for multiple outputs. Implemented: 
   # - normal equation
@@ -8,9 +8,9 @@ function [model]=LineaeRegressionMulti(x,y,standardize,type,varargin)
   
   # possible to change l for reduced rank regression, lambda for hybrid shrinkage
   
-  # evaluate arguments in varargin
-  for i=2:2:numel(varargin) 
-   eval(strcat(varargin{(i-1)}, '=', varargin{i},';'));
+  # evaluate arguments in options
+  for i=2:2:numel(options) 
+   eval(strcat(options{(i-1)}, '=', options{i},';'));
   end
   
   [m n]=size(x);

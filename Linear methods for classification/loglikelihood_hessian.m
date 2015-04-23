@@ -1,7 +1,7 @@
-function hessian=loglikelihood_hessian(X,beta,K,varargin)
+function hessian=loglikelihood_hessian(X,beta,K,options={})
   
-  for i=2:2:numel(varargin) 
-   eval(strcat(varargin{(i-1)}, '=', num2str(varargin{i}),';'));
+  for i=2:2:numel(options) 
+   eval(strcat(options{(i-1)}, '=', num2str(options{i}),';'));
   end
   if ~exist('K', 'var') || isempty(K)
     K=2;

@@ -1,4 +1,4 @@
-function [model]=LinearRegression(x,y,standardize,type,varargin)
+function [model]=LinearRegression(x,y,standardize,type,options={})
 
   # linear models implemented: 
   # - normal equation
@@ -14,9 +14,9 @@ function [model]=LinearRegression(x,y,standardize,type,varargin)
   #   zero_value for lar_lasso, threshold for pcr, l for pls, 
   # 
   
-  # evaluate arguments in varargin
-  for i=2:2:numel(varargin) 
-   eval(strcat(varargin{(i-1)}, '=', varargin{i},';'));
+  # evaluate arguments in options
+  for i=2:2:numel(options) 
+   eval(strcat(options{(i-1)}, '=', options{i},';'));
   end
   
   [m n]=size(x);

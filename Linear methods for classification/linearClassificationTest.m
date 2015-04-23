@@ -44,7 +44,8 @@ toc
 
 disp('------------------------------------------------------')
 tic
-model=LinearClassification(x,y,standardize,'qda','alpha','0.1','gamma','0.9');
+options={'alpha','0.1','gamma','0.9'};
+model=LinearClassification(x,y,standardize,'qda',options);
 disp(strcat('model type:',' ',model.type));
 y_hat=classify(x,model);
 perf=100*mean(y==y_hat)
@@ -61,7 +62,8 @@ toc
 
 disp('------------------------------------------------------')
 tic
-model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','-1');
+options={'lambda','10','penalty','-1'};
+model=LinearClassification(x,y,standardize,'multi-logit',options);
 disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
 disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
 y_hat=classify(x,model);
@@ -70,7 +72,8 @@ toc
 
 disp('------------------------------------------------------')
 tic
-model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','0');
+options={'lambda','10','penalty','0'};
+model=LinearClassification(x,y,standardize,'multi-logit',options);
 disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
 disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
 y_hat=classify(x,model);
@@ -79,7 +82,8 @@ toc
 
 disp('------------------------------------------------------')
 tic
-model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','1');
+options={'lambda','10','penalty','1'};
+model=LinearClassification(x,y,standardize,'multi-logit',options);
 disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
 disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
 y_hat=classify(x,model);
@@ -88,7 +92,8 @@ toc
 
 disp('------------------------------------------------------')
 tic
-model=LinearClassification(x,y,standardize,'multi-logit','lambda','10','penalty','2');
+options={'lambda','10','penalty','2'};
+model=LinearClassification(x,y,standardize,'multi-logit',options);
 disp(strcat('model type: ',model.type,', ','penalty: L',num2str(model.penalty)));
 disp(strcat('loglikelihood: ',num2str(model.loglikelihood)));
 y_hat=classify(x,model);

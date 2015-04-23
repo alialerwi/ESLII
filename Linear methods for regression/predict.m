@@ -1,4 +1,4 @@
-function y_hat=predict(x_new,model,varargin)
+function y_hat=predict(x_new,model,options={})
 
   # linear models implemented: 
   # - normal equation
@@ -13,9 +13,9 @@ function y_hat=predict(x_new,model,varargin)
   # - smooth reduced rank regression, multiple output
   # - hybrid shrinkage, multiple output
   
-  # evaluate arguments in varargin
-  for i=2:2:numel(varargin) 
-   eval(strcat(varargin{(i-1)}, '=', varargin{i}));
+  # evaluate arguments in options
+  for i=2:2:numel(options) 
+   eval(strcat(options{(i-1)}, '=', options{i}));
   end
   
   [m n]=size(x_new);
