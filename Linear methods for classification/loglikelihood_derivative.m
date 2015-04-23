@@ -1,7 +1,7 @@
 function derivative=loglikelihood_derivative(X,Y,beta,K,options={})
 
   for i=2:2:numel(options) 
-   eval(strcat(options{(i-1)}, '=', num2str(options{i}),';'));
+    eval(strcat(options{(i-1)}, '=[', num2str(options{i}),'];'))
   end
   if ~exist('K', 'var') || isempty(K)
     K=2;

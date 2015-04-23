@@ -8,7 +8,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
   # - least angle regression - FS0 modification
   # - principal components regression
   # - partial least squares regression
-  # 
+  # - general spline
   
   # possible to change lambda for ridge, alpha for lar and lar_lasso, 
   #   zero_value for lar_lasso, threshold for pcr, l for pls, 
@@ -16,7 +16,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
   
   # evaluate arguments in options
   for i=2:2:numel(options) 
-   eval(strcat(options{(i-1)}, '=', options{i},';'));
+    eval(strcat(options{(i-1)}, '=[', num2str(options{i}),'];'))
   end
   
   [m n]=size(x);
@@ -184,7 +184,28 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
       model.PHI=PHI;
       model.THETA=THETA;
       model.P=P;
-    
+      
+  # general spline regression
+    case 'general spline'
+      if ~exist('M', 'var') || isempty(M)
+        M=4;
+      end
+
+      if ~exist('knots', 'var') || isempty(knots)   
+        if ~exist('nK', 'var') || isempty(nK)
+          knots=unique(x)(2:(end-1))(:);
+          nK=length(knots);
+        else
+          knots=linspace(min(x),max(x),nK+2)(2:(end-1))(:);
+        end
+      else
+        nK=length(knots);
+      end
+      model.nK=nK;
+      model.M=M;
+      model.knots=knots
+      beta_hat=0;
+      
   endswitch
   
   # information to retrieve

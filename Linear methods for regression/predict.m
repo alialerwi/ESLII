@@ -15,7 +15,7 @@ function y_hat=predict(x_new,model,options={})
   
   # evaluate arguments in options
   for i=2:2:numel(options) 
-   eval(strcat(options{(i-1)}, '=', options{i}));
+    eval(strcat(options{(i-1)}, '=[', num2str(options{i}),'];'))
   end
   
   [m n]=size(x_new);

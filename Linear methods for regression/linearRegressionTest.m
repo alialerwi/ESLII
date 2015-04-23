@@ -92,3 +92,18 @@ model.type
 y_hat=predict(x,model);
 rss=sum(sum((ym-y_hat).^2))
 toc
+
+disp('------------------------------------------------------')
+x=1:18;
+y=[1:3 5 4 7:-1:3 2*(2:5) repmat(10,1, 4)](:);
+tic
+options={};
+model=LinearRegression(x,y,0,'general spline',options);
+options={'nK','16'};
+model=LinearRegression(x,y,0,'general spline',options);
+options={'knots',x};
+model=LinearRegression(x,y,0,'general spline',options);
+model.type
+#y_hat=predict(x,model);
+#rss=sum(sum((ym-y_hat).^2))
+toc
