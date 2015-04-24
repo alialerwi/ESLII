@@ -94,16 +94,36 @@ rss=sum(sum((ym-y_hat).^2))
 toc
 
 disp('------------------------------------------------------')
-x=1:18;
+x=(1:18)';
 y=[1:3 5 4 7:-1:3 2*(2:5) repmat(10,1, 4)](:);
 tic
 options={};
 model=LinearRegression(x,y,0,'general spline',options);
-options={'nK','16'};
-model=LinearRegression(x,y,0,'general spline',options);
-options={'knots',x};
-model=LinearRegression(x,y,0,'general spline',options);
 model.type
-#y_hat=predict(x,model);
-#rss=sum(sum((ym-y_hat).^2))
+y_hat=predict(x,model);
+rss=sum(sum((y-y_hat).^2))
 toc
+
+disp('------------------------------------------------------')
+x=(1:18)';
+y=[1:3 5 4 7:-1:3 2*(2:5) repmat(10,1, 4)](:);
+tic
+options={};
+model=LinearRegression(x,y,0,'natural cubic spline',options);
+model.type
+y_hat=predict(x,model);
+rss=sum(sum((y-y_hat).^2))
+toc
+
+disp('------------------------------------------------------')
+x=(1:18)';
+y=[1:3 5 4 7:-1:3 2*(2:5) repmat(10,1, 4)](:);
+tic
+options={};
+model=LinearRegression(x,y,0,'b spline',options);
+model.type
+y_hat=predict(x,model);
+rss=sum(sum((y-y_hat).^2))
+toc
+x_new=0:0.1:19;
+y_hat=predict(x_new,model);

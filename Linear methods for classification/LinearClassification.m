@@ -13,7 +13,7 @@ function [model]=LinearClassification(x,y,standardize,type,options={})
   
   # evaluate arguments in options
   for i=2:2:numel(options) 
-    eval(strcat(options{(i-1)}, '=[', num2str(options{i}),'];'))
+    eval(strcat(options{(i-1)}, '=[', num2str((options{i})(:)'),'];'))
   end
     
   [m n]=size(x);

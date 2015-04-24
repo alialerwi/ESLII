@@ -16,7 +16,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
   
   # evaluate arguments in options
   for i=2:2:numel(options) 
-    eval(strcat(options{(i-1)}, '=[', num2str(options{i}),'];'))
+    eval(strcat(options{(i-1)}, '=[', num2str((options{i})(:)'),'];'))
   end
   
   [m n]=size(x);
@@ -185,26 +185,22 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
       model.THETA=THETA;
       model.P=P;
       
-  # general spline regression
-    case 'general spline'
-      if ~exist('M', 'var') || isempty(M)
-        M=4;
+  # general spline or natural cubic spline or b spline regression
+    case {'general spline','natural cubic spline','b spline'}
+      splines=splines1D(x,type,options);
+      beta_hat=pinv(splines.h'*splines.h)*splines.h'*y;
+      #beta_hat=pinv(splines.h'*splines.h)*splines.h'*y
+      if strcmp(type,'b spline')
+        model.tau=splines.tau;
       end
-
-      if ~exist('knots', 'var') || isempty(knots)   
-        if ~exist('nK', 'var') || isempty(nK)
-          knots=unique(x)(2:(end-1))(:);
-          nK=length(knots);
-        else
-          knots=linspace(min(x),max(x),nK+2)(2:(end-1))(:);
-        end
-      else
-        nK=length(knots);
-      end
-      model.nK=nK;
-      model.M=M;
-      model.knots=knots
-      beta_hat=0;
+      
+      model.epsilon=splines.epsilon;
+      model.nK=splines.nK;
+      model.M=splines.M;
+      model.knots=splines.knots;
+      model.h=splines.h;
+    
+    
       
   endswitch
   

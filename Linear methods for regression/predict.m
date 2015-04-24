@@ -12,10 +12,11 @@ function y_hat=predict(x_new,model,options={})
   # - reduced rank regression, multiple output
   # - smooth reduced rank regression, multiple output
   # - hybrid shrinkage, multiple output
+  # - general spline, natural cubic spline, b spline
   
   # evaluate arguments in options
   for i=2:2:numel(options) 
-    eval(strcat(options{(i-1)}, '=[', num2str(options{i}),'];'))
+    eval(strcat(options{(i-1)}, '=[', num2str((options{i})(:)'),'];'))
   end
   
   [m n]=size(x_new);
@@ -25,26 +26,12 @@ function y_hat=predict(x_new,model,options={})
   end
   
   switch model.type
-    case 'normal'
+    case {'normal','normal.multi','ridge','lar','lar-lasso','pcr','pls','reduced rank','curds-whey','hybrid'}
       y_hat=[ones(m,1) x_new]*model.beta;
-    case 'normal.multi'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'ridge'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'lar'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'lar-lasso'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'pcr'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'pls'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'reduced rank'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'curds-whey'
-      y_hat=[ones(m,1) x_new]*model.beta;
-    case 'hybrid'
-      y_hat=[ones(m,1) x_new]*model.beta;
+    case {'general spline','natural cubic spline','b spline'}
+      options={'knots',model.knots,'M',model.M};
+      splines=splines1D(x_new,model.type,options,model.epsilon);
+      y_hat=splines.h*model.beta;
   endswitch
   
 end
