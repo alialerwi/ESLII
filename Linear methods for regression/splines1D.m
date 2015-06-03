@@ -61,7 +61,7 @@ function splines=splines1D(x,type,options={},epsilon)
   # b spline
     case 'b spline'
       #tau=[repmat(min(x),M,1);knots(:);repmat(max(x),M,1)];
-      delta=10^-3;
+      delta=10^5;
       step=delta/max(1,(M-1));
       if M==1
         tau=[epsilon(1);knots(:);epsilon(2)];
