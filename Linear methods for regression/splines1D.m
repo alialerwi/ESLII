@@ -161,10 +161,12 @@ function splines=splines1D(x,type,options={},epsilon)
           omega(j,k)=sum(ddb(:,j).*ddb(:,k));
         end
       end
+      S=h*pinv(h'*h+lambda.*omega)*h';
       
       splines.tau=tau;
       splines.lambda=lambda;
       splines.omega=omega;
+      splines.S=S;
   
   endswitch
   
