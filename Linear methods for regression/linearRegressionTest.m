@@ -125,5 +125,24 @@ model.type
 y_hat=predict(x,model);
 rss=sum(sum((y-y_hat).^2))
 toc
+x_new=-1:0.1:20;
+y_hat=predict(x_new,model);
+
+disp('------------------------------------------------------')
+x=(1:18)';
+y=[1:3 5 4 7:-1:3 2*(2:5) repmat(10,1, 4)](:);
+tic
+options={'lambda','5'};
+model=LinearRegression(x,y,0,'smoothing spline',options);
+model.type
+y_hat=predict(x,model);
+rss=sum(sum((y-y_hat).^2))
+toc
 x_new=0:0.1:19;
 y_hat=predict(x_new,model);
+
+figure()
+plot(x_new,y_hat);
+hold on
+plot(x,y,'o');
+hold off
