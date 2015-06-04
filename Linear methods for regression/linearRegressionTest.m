@@ -135,6 +135,7 @@ tic
 options={'lambda','5'};
 model=LinearRegression(x,y,0,'smoothing spline',options);
 model.type
+model.df
 y_hat=predict(x,model);
 rss=sum(sum((y-y_hat).^2))
 toc
