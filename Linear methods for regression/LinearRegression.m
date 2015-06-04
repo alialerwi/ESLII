@@ -217,6 +217,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
       model.omega=splines.omega;
       model.lambda=splines.lambda;
       model.S=splines.S;
+      model.df=splines.df;
       
   endswitch
   
