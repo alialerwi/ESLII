@@ -200,7 +200,22 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
       model.knots=splines.knots;
       model.h=splines.h;
     
-    
+  # smoothing spline regression
+    case {'smoothing spline'}
+      splines=splines1D(x,type,options);
+      beta_hat=pinv(splines.h'*splines.h+splines.lambda.*splines.omega)*splines.h'*y;
+      #beta_hat=pinv(splines.h'*splines.h)*splines.h'*y
+      if strcmp(type,'b spline')
+        model.tau=splines.tau;
+      end
+      
+      model.epsilon=splines.epsilon;
+      model.nK=splines.nK;
+      model.M=splines.M;
+      model.knots=splines.knots;
+      model.h=splines.h;
+      model.omega=splines.omega;
+      model.lambda=splines.lambda;
       
   endswitch
   
