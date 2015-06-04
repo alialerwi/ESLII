@@ -167,6 +167,7 @@ function splines=splines1D(x,type,options={},epsilon)
       splines.lambda=lambda;
       splines.omega=omega;
       splines.S=S;
+      splines.df=trace(S);
   
   endswitch
   
