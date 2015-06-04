@@ -12,7 +12,7 @@ function y_hat=predict(x_new,model,options={})
   # - reduced rank regression, multiple output
   # - smooth reduced rank regression, multiple output
   # - hybrid shrinkage, multiple output
-  # - general spline, natural cubic spline, b spline
+  # - general spline, natural cubic spline, b spline, smoothing spline
   
   # evaluate arguments in options
   for i=2:2:numel(options) 
@@ -31,6 +31,10 @@ function y_hat=predict(x_new,model,options={})
     case {'general spline','natural cubic spline','b spline'}
       options={'knots',model.knots,'M',model.M};
       splines=splines1D(x_new,model.type,options,model.epsilon);
+      y_hat=splines.h*model.beta;
+    case {'smoothing spline'}
+      options={'knots',model.knots,'M',model.M,'lambda','0'};
+      splines=splines1D(x_new,'b spline',options,model.epsilon);
       y_hat=splines.h*model.beta;
   endswitch
   
