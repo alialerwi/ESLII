@@ -8,7 +8,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
   # - least angle regression - FS0 modification
   # - principal components regression
   # - partial least squares regression
-  # - general spline
+  # - general spline, natural cubic spline, b spline
   
   # possible to change lambda for ridge, alpha for lar and lar_lasso, 
   #   zero_value for lar_lasso, threshold for pcr, l for pls, 
