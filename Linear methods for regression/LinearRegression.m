@@ -19,6 +19,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
     eval(strcat(options{(i-1)}, '=[', num2str((options{i})(:)'),'];'))
   end
   
+  y=y(:);
   [m n]=size(x);
   [m K]=size(y);
   
