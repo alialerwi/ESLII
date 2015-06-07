@@ -19,7 +19,6 @@ function splines=splines1D(x,type,options={},epsilon)
   if ~exist('lamda', 'var') || isempty(lambda)
     lambda=0;
   end
-
   if ~exist('epsilon', 'var') || isempty(epsilon)
     epsilon=[min(x); max(x)];
   end
