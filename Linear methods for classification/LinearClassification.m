@@ -167,7 +167,7 @@ function [model]=LinearClassification(x,y,standardize,type,options={})
   	      beta_old=beta;
           derivative=x'*(Y(:,2)-p);
           for j=1:m
-            w(j,j)=p(i).*(1-p(i));
+            w(j,j)=p(j).*(1-p(j));
           end
           hessian=-x'*w*x;
           z=x*beta+pinv(w)*(Y(:,2)-p);
@@ -284,7 +284,7 @@ function [model]=LinearClassification(x,y,standardize,type,options={})
         beta_old=beta_hat;
         derivative=splines.h'*(Y(:,2)-p)-splines.lambda.*splines.omega*beta_hat;
         for j=1:m
-          w(j,j)=p(i).*(1-p(i));
+          w(j,j)=p(j).*(1-p(j));
         end
         hessian=-splines.h'*w*splines.h-splines.lambda.*splines.omega;
 

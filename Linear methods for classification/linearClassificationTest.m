@@ -106,7 +106,7 @@ x=[1:18]';
 y=[sign(sin(x))](:);
 
 tic
-options={'lambda','0.1'};
+options={'lambda','1'};
 standardize=0;
 model=LinearClassification(x,y,standardize,'smoothing spline',options);
 y_hat=classify(x,model);
