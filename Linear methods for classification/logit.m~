@@ -9,13 +9,13 @@ function P=logit(X,beta,K)
   P=zeros((K-1)*m,1);
   
   z=X*beta;
-  num=exp(z);
-
+#  num=exp(z);
+num=1;
   
   for i=1:m
     id=m*(0:(K-2))+i;
-    den=1+sum(exp(z(id,1)));
-    P(id,1)=num(id)/den;
+    den=1+sum(exp(-z(id,1)));
+    P(id,1)=num/den;
   end
    
 end

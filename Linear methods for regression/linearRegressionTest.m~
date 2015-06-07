@@ -144,8 +144,8 @@ toc
 x_new=unifrnd(0,1,100,1);
 y_hat=predict(x_new,model);
 y_real=(sin(12*(x_new+0.2))./(x_new+0.2));
-epe=EPE(y_real,y_hat)
-cv=CV(y_real,y_hat,model.S)
+epe=EPE(y_real,y_hat);
+cv=CV(y_real,y_hat,model.S);
 
 figure()
 plot(x_new,y_hat,'.');

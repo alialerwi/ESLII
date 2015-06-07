@@ -223,7 +223,7 @@ function [model]=LinearRegression(x,y,standardize,type,options={})
       model.df=splines.df;
       
   endswitch
-  
+  s
   # information to retrieve
   model.type=type;
   model.x=x;

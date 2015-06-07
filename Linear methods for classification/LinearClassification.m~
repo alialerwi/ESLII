@@ -289,6 +289,7 @@ function [model]=LinearClassification(x,y,standardize,type,options={})
         hessian=-splines.h'*w*splines.h-splines.lambda.*splines.omega;
 
         beta_hat=beta_old-pinv(hessian)*derivative;
+
         #beta_hat=pinv(splines.h'*w*splines.h+splines.lambda.*splines.omega)*splines.h'*w*(splines.h*beta_old+pinv(w)*(Y(:,2)-p));
 
         p=logit(splines.h,beta_hat);
@@ -310,7 +311,7 @@ function [model]=LinearClassification(x,y,standardize,type,options={})
         p_old=logit(splines.h,beta_old);
 
         perf_old=mean(Y(:,2)==(G((p_old>threshold)+1)));
-        perf_new=mean(Y(:,2)==(G((p>threshold)+1)));
+        perf_new=mean(Y(:,2)==(G((p>threshold)+1)))
 
         if perf_new==perf_old;
           run=run+1;

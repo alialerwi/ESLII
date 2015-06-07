@@ -124,9 +124,6 @@ function y_hat=classify(x_new,model,options={})
 	    y_hat=model.G(pos);
    
     case 'smoothing spline'
-      if ~exist('threshold', 'var') || isempty(threshold)
-        threshold=model.threshold;
-      end
       options={'knots',model.knots,'M',model.M,'lambda','0'};
       splines=splines1D(x_new,model.type,options,model.epsilon);
       g=logit(splines.h,model.beta);
